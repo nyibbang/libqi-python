@@ -1,5 +1,5 @@
 from conan import ConanFile, tools
-from conan.tools.cmake import cmake_layout
+from conan.tools.cmake import cmake_layout, CMakeToolchain, CMakeDeps
 
 BOOST_COMPONENTS = [
     "atomic",
@@ -64,12 +64,15 @@ class QiPythonConan(ConanFile):
         "gtest/[~1.14]",
     ]
 
-    generators = "CMakeToolchain", "CMakeDeps"
-
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
 
+    options = {
+        "cibuildwheel": [True, False],
+    }
+
     default_options = {
+        "cibuildwheel": False,
         "boost/*:shared": True,
         "openssl/*:shared": True,
         "qi/*:with_boost_locale": True,  # for `pytranslator.cpp`
@@ -85,15 +88,31 @@ class QiPythonConan(ConanFile):
         }
     )
 
-    def layout(self):
-        # Configure the format of the build folder name, based on the value of some variables.
-        self.folders.build_folder_vars = [
-            "settings.os",
-            "settings.arch",
-            "settings.compiler",
-            "settings.build_type",
-        ]
+    def generate(self):
+        tc = CMakeToolchain(self)
+        # Do not generate a 'CMakeUserPresets.json' when building for CI.
+        if self.options.cibuildwheel:
+            tc.user_presets_path = False
+        tc.generate()
 
-        # The cmake_layout() sets the folders and cpp attributes to follow the
-        # structure of a typical CMake project.
-        cmake_layout(self)
+        deps = CMakeDeps(self)
+        deps.generate()
+
+    def layout(self):
+        # Do not use CMake layout when building a wheel, because we want to be able to reuse the
+        # build folder across multiple Python versions.
+        if not self.options.cibuildwheel:
+            # Configure the format of the build folder name, based on the value of some variables.
+            self.folders.build_folder_vars = [
+                "settings.os",
+                "settings.arch",
+                "settings.compiler",
+                "settings.build_type",
+            ]
+
+            # The cmake_layout() sets the folders and cpp attributes to follow the
+            # structure of a typical CMake project.
+            cmake_layout(self)
+
+    def package_id(self):
+        del self.info.options.cibuildwheel

@@ -37,6 +37,7 @@ classifiers=[
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
 ]
 maintainers = [
@@ -51,10 +52,8 @@ repository = "https://github.com/aldebaran/libqi-python"
 [tool.scikit-build]
 # Rely only on CMake install, not on Python packages detection.
 wheel.packages = []
-
-[tool.scikit-build.cmake.define]
-# Disable building tests by default when building a wheel.
-BUILD_TESTING = "OFF"
+cmake.version = ">=3.23"
+ninja.version = ">=1.10"
 
 [tool.cibuildwheel]
 build = "cp*manylinux*x86_64"
@@ -64,4 +63,5 @@ build-frontend = "build"
 before-all = ["ci/cibuildwheel_linux_before_all.sh {package}"]
 
 [tool.cibuildwheel.linux.config-settings]
-"cmake.args" = ["--preset=conan-release"]
+"cmake.define.CMAKE_TOOLCHAIN_FILE" = ["/work/conan/conan_toolchain.cmake"]
+"cmake.build-type" = "Release"
