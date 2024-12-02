@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - qi-python-v*
+  workflow_dispatch:
 
 jobs:
   build_wheel:
