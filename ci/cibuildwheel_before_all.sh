@@ -11,7 +11,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Perl dependencies required to build OpenSSL.
     yum install -y perl-IPC-Cmd perl-Digest-SHA
     CPPSTD_PROFILE=cppstdgnu17
-elif
+else
     CPPSTD_PROFILE=cppstd17
 fi
 
