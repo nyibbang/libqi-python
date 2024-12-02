@@ -29,7 +29,7 @@ conan export "$DEPS_DIR/libqi-git"
 # This is because the GLIBC from the manylinux images are often older than the
 # ones that were used to build the precompiled binaries, which means the binaries
 # cannot by executed.
-conan install "$PACKAGE" \
+conan install "$PACKAGE_DIR" \
     --build="*" \
     --profile:all default \
     --profile:all cppstd17
