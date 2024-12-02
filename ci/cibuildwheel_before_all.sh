@@ -10,6 +10,9 @@ pip install 'conan>=2'
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Perl dependencies required to build OpenSSL.
     yum install -y perl-IPC-Cmd perl-Digest-SHA
+    CPPSTD_PROFILE=cppstdgnu17
+elif
+    CPPSTD_PROFILE=cppstd17
 fi
 
 # Install Conan configuration.
@@ -32,6 +35,6 @@ conan export "$DEPS_DIR/libqi-git"
 conan install "$PACKAGE_DIR" \
     --build="*" \
     --profile:all default \
-    --profile:all cppstd17
+    --profile:all "$CPPSTD_PROFILE"
     --options cibuildwheel=True
     --output-folder "$DEPS_DIR"
